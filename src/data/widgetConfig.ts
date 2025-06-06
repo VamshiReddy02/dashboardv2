@@ -1,4 +1,4 @@
-export type WidgetConfigType = "chart" | "nodata";
+export type WidgetConfigType = "chart" | "nodata" | "bar";
 
 interface ChartData {
   name: string;
@@ -23,7 +23,17 @@ interface NoDataWidgetConfig extends BaseWidgetConfig {
   message: string;
 }
 
-export type WidgetConfig = ChartWidgetConfig | NoDataWidgetConfig;
+interface BarWidgetConfig extends BaseWidgetConfig {
+  type: "bar";
+  total: number;
+  unitLabel: string;
+  data: ChartData[];
+}
+
+export type WidgetConfig =
+  | ChartWidgetConfig
+  | NoDataWidgetConfig
+  | BarWidgetConfig;
 
 export const widgetConfig: Record<string, WidgetConfig> = {
   cloudAccounts: {
@@ -63,8 +73,9 @@ export const widgetConfig: Record<string, WidgetConfig> = {
   imageRisk: {
     title: "Image Risk Assessment",
     category: "Registry Scan",
-    type: "chart",
+    type: "bar",
     total: 1470,
+    unitLabel: "Total Vulnerabilities",
     data: [
       { name: "Critical", value: 9, color: "#C92C2C" },
       { name: "High", value: 150, color: "#e03131" },
@@ -75,13 +86,15 @@ export const widgetConfig: Record<string, WidgetConfig> = {
   imageSecurity: {
     title: "Image Security Issues",
     category: "Registry Scan",
-    type: "chart",
+    type: "bar",
     total: 2,
+    unitLabel: "Total Images",
     data: [
-      { name: "Critical", value: 2, color: "#C92C2C" },
-      { name: "High", value: 2, color: "#fa5252" },
-      { name: "Medium", value: 4, color: "#fab005" },
-      { name: "Low", value: 8, color: "#ced4da" },
+      { name: "Critical", value: 2, color: "#7f1d1d" },
+      { name: "High", value: 2, color: "#dc2626" },
+      { name: "Medium", value: 1, color: "#f97316" },
+      { name: "Low", value: 1, color: "#facc15" },
+      { name: "Unknown", value: 1, color: "#9ca3af" },
     ],
   },
 };

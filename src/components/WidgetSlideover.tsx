@@ -3,11 +3,18 @@ import { widgetConfig } from "../data/widgetConfig";
 import { useWidgetStore } from "../store/widgetStore";
 import clsx from "clsx";
 
-const categories = ["CSPM", "CWPP", "Registry Scan", "Ticket"];
+const categories = ["CSPM", "CWPP", "Registry Scan"];
 
 const WidgetSlideover = () => {
-  const { open, selectedCategory, selectedWidgets, toggleWidget, closePanel, reset } =
-    useUIStore();
+  const {
+    open,
+    selectedCategory,
+    selectedWidgets,
+    toggleWidget,
+    closePanel,
+    reset,
+  } = useUIStore();
+
   const addWidget = useWidgetStore((s) => s.addWidget);
 
   const handleConfirm = () => {
@@ -20,23 +27,38 @@ const WidgetSlideover = () => {
     reset();
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-40 flex">
-      {/* overlay */}
+    <div
+      className={clsx(
+        "fixed inset-0 z-50 flex",
+        open ? "visible" : "invisible pointer-events-none"
+      )}
+    >
+      {/* Background overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-30"
+        className={clsx(
+          "fixed inset-0 transition-opacity duration-300",
+          open ? "bg-opacity-30" : "bg-transparent"
+        )}
         onClick={closePanel}
       />
 
-      {/* panel */}
-      <div className="ml-auto bg-white w-full max-w-md h-full shadow-xl z-50 flex flex-col">
+      {/* Slide panel */}
+      <div
+        className={clsx(
+          "ml-auto bg-white w-full max-w-md h-full shadow-xl z-50 flex flex-col transform transition-transform duration-300",
+          open ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        {/* Header */}
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="font-semibold text-lg">Add Widget</h2>
-          <button onClick={closePanel}>✕</button>
+          <button onClick={closePanel} className="text-xl font-bold">
+            ×
+          </button>
         </div>
 
+        {/* Body */}
         <div className="p-4">
           <p className="text-sm text-gray-500 mb-3">
             Personalize your dashboard by adding the following widget
@@ -47,18 +69,19 @@ const WidgetSlideover = () => {
             {categories.map((cat) => (
               <button
                 key={cat}
-                className={clsx("pb-2", {
-                  "border-b-2 border-blue-600 font-medium":
-                    cat === selectedCategory,
-                  "text-gray-400": cat !== selectedCategory,
-                })}
+                className={clsx(
+                  "pb-2",
+                  cat === selectedCategory
+                    ? "border-b-2 border-blue-600 font-medium text-blue-700"
+                    : "text-gray-400"
+                )}
               >
                 {cat}
               </button>
             ))}
           </div>
 
-          {/* Widget options */}
+          {/* Widget list */}
           <div className="space-y-2 max-h-[60vh] overflow-y-auto">
             {Object.entries(widgetConfig)
               .filter(([_, cfg]) => cfg.category === selectedCategory)
@@ -78,13 +101,17 @@ const WidgetSlideover = () => {
           </div>
         </div>
 
+        {/* Footer */}
         <div className="p-4 mt-auto flex justify-end gap-2 border-t">
-          <button onClick={reset} className="border px-4 py-1 rounded">
+          <button
+            onClick={reset}
+            className="border px-4 py-1 rounded hover:bg-gray-50"
+          >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
-            className="bg-blue-600 text-white px-4 py-1 rounded"
+            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
           >
             Confirm
           </button>
