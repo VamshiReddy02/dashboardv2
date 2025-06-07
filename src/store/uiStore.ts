@@ -8,6 +8,7 @@ interface UIState {
   openPanel: (category: string) => void;
   closePanel: () => void;
   toggleWidget: (type: WidgetType) => void;
+  setCategory: (category: string) => void; // ✅
   reset: () => void;
 }
 
@@ -26,5 +27,6 @@ export const useUIStore = create<UIState>((set) => ({
           : [...state.selectedWidgets, type],
       };
     }),
+  setCategory: (category) => set({ selectedCategory: category }), // ✅
   reset: () => set({ open: false, selectedCategory: null, selectedWidgets: [] }),
 }));

@@ -6,9 +6,9 @@ const AddWidgetCard = ({ category }: { category: string }) => {
   return (
     <div
       onClick={() => openPanel(category)}
-      className="bg-white border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center min-h-[180px] cursor-pointer hover:bg-gray-50"
+      className="bg-white border border-20 border-violet-50 rounded-xl p-4 flex items-center justify-center min-h-[180px] cursor-pointer hover:bg-gray-50"
     >
-      <button className="text-blue-600 font-medium flex items-center gap-1">
+      <button className="px-2 py-1 text-neutral-400 border border-gray-300 rounded-md flex items-center gap-1">
         <span className="text-xl">＋</span>
         Add Widget
       </button>

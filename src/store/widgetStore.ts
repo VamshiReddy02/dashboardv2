@@ -6,7 +6,8 @@ export type WidgetType =
   | "namespaceAlerts"
   | "workloadAlerts"
   | "imageRisk"
-  | "imageSecurity";
+  | "imageSecurity"
+  | (string & {}); 
 
 export interface Widget {
   id: number;
@@ -20,7 +21,7 @@ interface WidgetStore {
   removeWidget: (id: number) => void;
 }
 
-let idCounter = 7; // start from 7 because we're preloading 6 widgets
+let idCounter = 7;
 
 export const useWidgetStore = create<WidgetStore>((set) => ({
   widgets: [

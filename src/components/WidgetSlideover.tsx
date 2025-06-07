@@ -1,31 +1,53 @@
-import { useUIStore } from "../store/uiStore";
 import { widgetConfig } from "../data/widgetConfig";
+import { useUIStore } from "../store/uiStore";
 import { useWidgetStore } from "../store/widgetStore";
 import clsx from "clsx";
+import { useState } from "react";
 
 const categories = ["CSPM", "CWPP", "Registry Scan"];
+
 
 const WidgetSlideover = () => {
   const {
     open,
     selectedCategory,
-    selectedWidgets,
-    toggleWidget,
     closePanel,
     reset,
+    setCategory,
   } = useUIStore();
 
   const addWidget = useWidgetStore((s) => s.addWidget);
 
-  const handleConfirm = () => {
-    selectedWidgets.forEach((type) => {
-      const config = widgetConfig[type];
-      if (config) {
-        addWidget(type, config.category);
-      }
-    });
-    reset();
+  const [title, setTitle] = useState("");
+  const [info, setInfo] = useState("");
+
+const handleConfirm = () => {
+  if (!title || !info || !selectedCategory) return;
+
+  const newType = `${title.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
+
+  const categoryMap: Record<string, string> = {
+    CSPM: "CSPM Executive Dashboard",
+    CWPP: "CWPP Dashboard",
+    "Registry Scan": "Registry Scan",
   };
+
+  const mappedCategory = categoryMap[selectedCategory];
+
+  addWidget(newType, mappedCategory);
+
+  widgetConfig[newType] = {
+    title,
+    category: mappedCategory,
+    type: "nodata",
+    message: info,
+  };
+
+  reset();
+  setTitle("");
+  setInfo("");
+};
+
 
   return (
     <div
@@ -34,7 +56,6 @@ const WidgetSlideover = () => {
         open ? "visible" : "invisible pointer-events-none"
       )}
     >
-      {/* Background overlay */}
       <div
         className={clsx(
           "fixed inset-0 transition-opacity duration-300",
@@ -43,32 +64,29 @@ const WidgetSlideover = () => {
         onClick={closePanel}
       />
 
-      {/* Slide panel */}
       <div
         className={clsx(
           "ml-auto bg-white w-full max-w-md h-full shadow-xl z-50 flex flex-col transform transition-transform duration-300",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Header */}
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="font-semibold text-lg">Add Widget</h2>
+        <div className="px-5 py-2 bg-blue-950 text-white border-b flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Add Widget</h2>
           <button onClick={closePanel} className="text-xl font-bold">
             ×
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-4">
+        <div className="p-4 flex flex-col h-full">
           <p className="text-sm text-gray-500 mb-3">
-            Personalize your dashboard by adding the following widget
+            Personalize your dashboard by adding a custom widget
           </p>
 
-          {/* Tabs */}
           <div className="flex gap-4 border-b mb-3">
             {categories.map((cat) => (
               <button
                 key={cat}
+                onClick={() => setCategory(cat)}
                 className={clsx(
                   "pb-2",
                   cat === selectedCategory
@@ -81,40 +99,37 @@ const WidgetSlideover = () => {
             ))}
           </div>
 
-          {/* Widget list */}
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-            {Object.entries(widgetConfig)
-              .filter(([_, cfg]) => cfg.category === selectedCategory)
-              .map(([key, cfg]) => (
-                <label
-                  key={key}
-                  className="flex items-center gap-3 p-2 border rounded cursor-pointer hover:bg-gray-50"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedWidgets.includes(key as any)}
-                    onChange={() => toggleWidget(key as any)}
-                  />
-                  <span>{cfg.title}</span>
-                </label>
-              ))}
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <input
+              type="text"
+              placeholder="Widget Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="text"
+              placeholder="Info"
+              value={info}
+              onChange={(e) => setInfo(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-4 mt-auto flex justify-end gap-2 border-t">
-          <button
-            onClick={reset}
-            className="border px-4 py-1 rounded hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-          >
-            Confirm
-          </button>
+          <div className="p-4 mt-auto flex justify-end gap-2">
+            <button
+              onClick={reset}
+              className="border px-4 py-1 rounded hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirm}
+              className="bg-blue-950 text-white px-4 py-1 rounded hover:bg-blue-700"
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       </div>
     </div>

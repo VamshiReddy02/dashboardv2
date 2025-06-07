@@ -35,7 +35,7 @@ export type WidgetConfig =
   | NoDataWidgetConfig
   | BarWidgetConfig;
 
-export const widgetConfig: Record<string, WidgetConfig> = {
+export let widgetConfig: Record<string, WidgetConfig> = {
   cloudAccounts: {
     title: "Cloud Accounts",
     category: "CSPM Executive Dashboard",
